@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/utility.css">
+<style>
+    body { background-color: black; color: white; font-family: "Roboto", sans-serif; }
+    .a { text-align: center; padding-top: 50px; }
+    input { width: 400px; padding: 10px; margin: 10px 0; border-radius: 5px; background-color: black; color: white; border: 1px solid #ccc; }
+    button { padding: 10px 20px; background-color: #1fdf64; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    button:hover { font-weight: bold; font-size: 17px; }
+    .toggle-password { cursor: pointer; color: #1fdf64; font-size: 14px; }
+    .error { color: red; font-size: 14px; margin-top: 5px; }
+</style>
+</head>
+<body>
+<div class="a">
+    <img width="110" class="invert" src="img/logo.svg" alt="">
+    <br><br><br><h1>Sign Up</h1><br><br><br>
+    <form id="signupForm">
+        <input type="text" id="signupUsername" placeholder="Username" required><br>
+        <span class="error" id="usernameError"></span><br>
+
+        <input type="email" id="signupEmail" placeholder="Email" required><br>
+        <span class="error" id="emailError"></span><br>
+
+        <input type="password" id="signupPassword" placeholder="Password" required><br>
+        <br><span class="toggle-password" id="togglePassword">Show Password</span>
+        <span class="error" id="passwordError"></span><br><br>
+
+        <button type="submit">Sign Up</button><br><br>
+    </form>
+    <p>Already registered? <a href="login.html">Login here</a></p>
+</div>
+
+<script>
+const form = document.getElementById('signupForm');
+const usernameInput = document.getElementById('signupUsername');
+const emailInput = document.getElementById('signupEmail');
+const passwordInput = document.getElementById('signupPassword');
+
+const usernameError = document.getElementById('usernameError');
+const emailError = document.getElementById('emailError');
+const passwordError = document.getElementById('passwordError');
+
+document.getElementById('togglePassword').addEventListener('click', () => {
+    if(passwordInput.type === 'password') passwordInput.type = 'text';
+    else passwordInput.type = 'password';
+});
+
+form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    let valid = true;
+    usernameError.textContent = "";
+    emailError.textContent = "";
+    passwordError.textContent = "";
+
+    // Validate username
+    if(usernameInput.value.trim().length < 3){
+        usernameError.textContent = "Username must be at least 3 characters";
+        valid = false;
+    }
+
+    // Validate email
+    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+    if(!emailPattern.test(emailInput.value.trim())){
+        emailError.textContent = "Enter a valid email";
+        valid = false;
+    }
+
+    // Validate password
+    if(passwordInput.value.trim().length < 6){
+        passwordError.textContent = "Password must be at least 6 characters";
+        valid = false;
+    }
+
+    if(!valid) return;
+
+    // Check if email already exists
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    if(users.find(u=>u.email===emailInput.value.trim())){
+        alert("Email already registered!");
+        return;
+    }
+
+    // Save user
+    users.push({username: usernameInput.value.trim(), email: emailInput.value.trim(), password: passwordInput.value.trim()});
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert("Registration successful!");
+    window.location.href = "login.html";
+});
+</script>
+</body>
+</html>

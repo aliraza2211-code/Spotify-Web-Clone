@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/utility.css">
+<style>
+    body { background-color: black; color: white; font-family: "Roboto", sans-serif; }
+    .a { text-align: center; padding-top: 50px; }
+    input { width: 400px; padding: 10px; margin: 10px 0; border-radius: 5px; background-color: black; color: white; border: 1px solid #ccc; }
+    button { padding: 10px 20px; background-color: #1fdf64; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    button:hover { font-weight: bold; font-size: 17px; }
+    .toggle-password { cursor: pointer; color: #1fdf64; font-size: 14px; }
+    .error { color: red; font-size: 14px; margin-top: 5px; }
+</style>
+</head>
+<body>
+<div class="a">
+    <img width="110" class="invert" src="img/logo.svg" alt="">
+    <br><br><h1>Log In</h1><br><br>
+    <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required><br>
+        <span class="error" id="emailError"></span><br>
+
+        <input type="password" id="loginPassword" placeholder="Password" required><br>
+        <span class="toggle-password" id="togglePassword">Show Password</span>
+        <span class="error" id="passwordError"></span><br><br>
+
+        <button type="submit">Log In</button><br><br>
+    </form>
+    <p>Not registered yet? <a href="signup.html">Register here</a></p>
+</div>
+
+<script>
+const loginForm = document.getElementById('loginForm');
+const loginEmail = document.getElementById('loginEmail');
+const loginPassword = document.getElementById('loginPassword');
+
+const emailError = document.getElementById('emailError');
+const passwordError = document.getElementById('passwordError');
+
+document.getElementById('togglePassword').addEventListener('click', () => {
+    if(loginPassword.type === 'password') loginPassword.type = 'text';
+    else loginPassword.type = 'password';
+});
+
+loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    emailError.textContent = "";
+    passwordError.textContent = "";
+
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value.trim();
+
+    let valid = true;
+
+    // Basic validations
+    if(email === "") {
+        emailError.textContent = "Email is required";
+        valid = false;
+    }
+    if(password === "") {
+        passwordError.textContent = "Password is required";
+        valid = false;
+    }
+    if(!valid) return;
+
+    // Check user in localStorage
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.email === email);
+
+    if(!user) {
+        emailError.textContent = "Email not registered";
+        return;
+    }
+
+    if(user.password !== password) {
+        passwordError.textContent = "Incorrect password";
+        return;
+    }
+
+    // Save login info to sessionStorage
+    sessionStorage.setItem('loggedInUser', JSON.stringify({username: user.username, email: user.email}));
+
+    // Redirect to home page
+    window.location.href = "index.html";
+});
+</script>
+</body>
+</html>
